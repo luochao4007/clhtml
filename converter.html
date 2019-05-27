@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Converter</title>
+    <style>
+      input {
+      width: 46%;
+      }
+      fieldset {
+          width: 95%;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <fieldset size="20">
+      <legend>Temperature</legend>
+      <input type="number" name="celsius" value="25" id="celsius" autofocus>
+      &degC =
+      <input type="number" name="fahrenheit" value="77" id="fahrenheit">
+      &degF
+    </fieldset>
+
+    <script>
+      var celsius    = document.getElementById("celsius");
+      var fahrenheit = document.getElementById("fahrenheit");
+      celsius.oninput = function() {celsiusToFahrenheit()};
+      fahrenheit.oninput = function() {fahrenheitToCelsius()};
+      function celsiusToFahrenheit() {
+          fahrenheit.value = celsius.value * 9 / 5 + 32;
+          fahrenheit.value = parseFloat(fahrenheit.value).toFixed(2);
+      }
+      function fahrenheitToCelsius() {
+          celsius.value = (fahrenheit.value - 32) * 5 / 9;
+          celsius.value = parseFloat(celsius.value).toFixed(2);
+      }
+    </script>
+    
+  </body>
+</html>
