@@ -1,39 +1,178 @@
+<!DOCTYPE html>
 <html>
+  
   <head>
     <title>Converter</title>
     <style>
+      * {
+      font-size:20px;
+      text-align:center;
+      }
       input {
-      width: 46%;
+          width: 23%;
+          margin: 1px;
       }
       fieldset {
-          width: 95%;
+          width: 90%;
+          margin:auto;
+      }
+      #dollarInYuan {
+          width: 50px;
+      }
+      #cm {
+          width: 50px;
+      }
+      #foot {
+          width: 30px;
+      }
+      #inch {
+          width: 30px;
+      }
+      #milePerGallon {
+          width: 50px;
+      }
+      #literPerHundredKM {
+          width: 50px;
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
+  
   <body>
-    <fieldset size="20">
+    
+    <fieldset>
       <legend>Temperature</legend>
-      <input type="number" name="celsius" value="25" id="celsius" autofocus>
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="celsius" value="25" id="celsius">
       &degC =
-      <input type="number" name="fahrenheit" value="77" id="fahrenheit">
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="fahrenheit" value="77" id="fahrenheit">
       &degF
     </fieldset>
 
-    <script>
-      var celsius    = document.getElementById("celsius");
-      var fahrenheit = document.getElementById("fahrenheit");
-      celsius.oninput = function() {celsiusToFahrenheit()};
-      fahrenheit.oninput = function() {fahrenheitToCelsius()};
-      function celsiusToFahrenheit() {
-          fahrenheit.value = celsius.value * 9 / 5 + 32;
-          fahrenheit.value = parseFloat(fahrenheit.value).toFixed(2);
-      }
-      function fahrenheitToCelsius() {
-          celsius.value = (fahrenheit.value - 32) * 5 / 9;
-          celsius.value = parseFloat(celsius.value).toFixed(2);
-      }
-    </script>
-    
+    <fieldset>
+      <legend>Height</legend>
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="cm" value="167" id="cm">
+      CM=
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="foot" value="5" id="foot">
+      Foot
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="inch" value="6" id="inch">
+      Inch
+    </fieldset>
+
+    <fieldset>
+      <legend>Speed</legend>
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="mile" value="65" id="mile", oninput="">
+      Mile=
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="km" value="104.61" id="km">
+      KM
+    </fieldset>
+
+    <fieldset>
+      <legend>Gas Price</legend>
+      1$ =
+      <input type="number" onfocus="onFocus()" name="dollarInYuan", value="6.8", id="dollarInYuan" step="0.1">&yen<br>
+      <input type="number" onfocus="onFocus()" name="dollarPerGallon", value="2.8", id="dollarPerGallon", step="0.1">
+      $/G=
+      <input type="number" onfocus="onFocus()" name="yuanPerLiter", value="5.03", id="yuanPerLiter", step="0.1">
+      &yen/L
+    </fieldset>
+
+    <fieldset>
+      <legend>Millage</legend>
+      <input type="number" onfocus="onFocus()" name="milePerGallon", value="24", id="milePerGallon">
+      Mile/G=
+      <input type="number" onfocus="onFocus()" name="literPerHundredKM", value="9.8", id="literPerHundredKM">
+      L/100KM
+    </fieldset>
   </body>
+
+  <script>
+    function isMobileDevice() {
+        return (typeof window.orientation !== "undefined") ||
+            (navigator.userAgent.indexOf('IEMobile') !== -1);
+    }
+    function onFocus() {
+        if (isMobileDevice()) {
+            document.activeElement.value="";
+        }
+    }
+    // Convertion
+    const FAHRENHEIT_PER_CELSIUS = 1.8;
+    const INCH_PER_FOOT = 12;
+    const CM_PER_FOOT = 30.48;
+    const KM_PER_MILE = 1.609344;
+    const LITER_PER_GALLON = 3.785411784;
+    // Temperature
+    var celsius    = document.getElementById("celsius");
+    var fahrenheit = document.getElementById("fahrenheit");
+    celsius.oninput = function() {celsiusToFahrenheit()};
+    fahrenheit.oninput = function() {fahrenheitToCelsius()};
+    function celsiusToFahrenheit() {
+        fahrenheit.value = parseFloat(celsius.value) * FAHRENHEIT_PER_CELSIUS  + 32;
+        fahrenheit.value = parseFloat(fahrenheit.value).toFixed(2);
+    }
+    function fahrenheitToCelsius() {
+        celsius.value = (parseFloat(fahrenheit.value) - 32) / FAHRENHEIT_PER_CELSIUS;
+        celsius.value = parseFloat(celsius.value).toFixed(2);
+    }
+    // Height
+    var cm = document.getElementById("cm");
+    var foot = document.getElementById("foot");
+    var inch = document.getElementById("inch");
+    cm.oninput = function() {cmToFootInch()};
+    foot.oninput = function() {footInchToCm()};
+    inch.oninput = function() {footInchToCm()};
+    function cmToFootInch() {
+        var inchNum = parseFloat(cm.value * INCH_PER_FOOT / CM_PER_FOOT).toFixed(0);
+        var footNum = Math.floor((inchNum / INCH_PER_FOOT));
+        inchNum = inchNum - INCH_PER_FOOT * footNum;
+        foot.value = footNum;
+        inch.value = inchNum;
+    }
+    function footInchToCm() {
+        var cmNum = (parseFloat(foot.value)  + parseFloat(inch.value) / INCH_PER_FOOT ) * CM_PER_FOOT;
+        cmNum = cmNum.toFixed(0);
+        cm.value = cmNum;
+    }
+    // Speed
+    var mile = document.getElementById("mile");
+    var km = document.getElementById("km");
+    mile.oninput = function() {mileToKm()};
+    km.oninput = function() {kmToMile()};
+    function mileToKm() {
+        km.value = (parseFloat(mile.value) * KM_PER_MILE).toFixed(2);
+    }
+    function kmToMile() {
+        mile.value = (parseFloat(km.value) / KM_PER_MILE).toFixed(2);
+    }
+    // Gas price
+    var dollarInYuan = document.getElementById("dollarInYuan");
+    var dollarPerGallon = document.getElementById("dollarPerGallon");
+    var yuanPerLiter = document.getElementById("yuanPerLiter");
+    dollarInYuan.oninput = function() {dollarPerGallonToYuanPerLiter()};
+    dollarPerGallon.oninput = function() {dollarPerGallonToYuanPerLiter()};
+    yuanPerLiter.oninput = function() {yuanPerLiterToDollarPerGallon()};
+    function dollarPerGallonToYuanPerLiter() {
+        var yuanNum = parseFloat(dollarInYuan.value) * parseFloat(dollarPerGallon.value) / LITER_PER_GALLON;
+        yuanPerLiter.value = yuanNum.toFixed(2);
+    }
+    function yuanPerLiterToDollarPerGallon() {
+        var dollarNum = parseFloat(yuanPerLiter.value * LITER_PER_GALLON / parseFloat(dollarInYuan.value));
+        dollarPerGallon.value = dollarNum.toFixed(2);
+    }
+    // Millage
+    var milePerGallon = document.getElementById("milePerGallon");
+    var literPerHundredKM = document.getElementById("literPerHundredKM");
+    milePerGallon.oninput = function() {milePerGallonToliterPerHundredKM()};
+    literPerHundredKM.oninput = function() {literPerHundredKMTomilePerGallon()};
+    function milePerGallonToliterPerHundredKM() {
+        var kmNum = parseFloat(milePerGallon.value) * KM_PER_MILE;
+        literPerHundredKM.value = (LITER_PER_GALLON * 100 / kmNum).toFixed(2);
+    }
+    function literPerHundredKMTomilePerGallon() {
+        var gallonNum = parseFloat(literPerHundredKM.value) / LITER_PER_GALLON;
+        var mileNum = 100 / KM_PER_MILE;
+        milePerGallon.value = (mileNum / gallonNum).toFixed(2);
+    }
+  </script>
+  
 </html>
