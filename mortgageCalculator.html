@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mortgage Calculator</title>
+    <style>
+      * {
+      font-size:35px;
+      text-align:left;
+      }
+      input {
+          width: 23%;
+          margin: 1px;
+          text-align: right;
+      }
+      fieldset {
+          width: 90%;
+          margin: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <fieldset>
+        Years:
+        <select onfocus="onFocus()" name="years" id="years">
+          <option value = "15">15</option>
+          <option value = "30">30</option>
+        </select><br>
+        Interest Rate:
+        <input onfocus="onFocus()"  type="number" name="interestRate" value="3.125" id="interestRate">%<br>
+        Mortgage Amount:
+        $<input onfocus="onFocus()" type="number" pattern="[0-9]*" value="600000" name="mortgageAmount" id="mortgageAmount"><br>
+        Monthly Payment:
+        $<output name="monthlyPayment" id="monthlyPayment"></output><br>
+        Total Payment:
+        $<output name="totalPayment" id="totalPayment"></output><br>
+      </fieldset>
+    </form>
+  </body>
+  <script>
+    function isMobileDevice() {
+        return (typeof window.orientation !== "undefined") ||
+            (navigator.userAgent.indexOf('IEMobile') !== -1);
+    }
+    function onFocus() {
+        if (isMobileDevice()) {
+            document.activeElement.value="";
+        }
+    }
+    var g_years = document.getElementById("years");
+    var g_interestRate = document.getElementById("interestRate");
+    var g_mortgageAmount = document.getElementById("mortgageAmount");
+    var g_monthlyPayment = document.getElementById("monthlyPayment");
+    var g_totalPayment = document.getElementById("totalPayment");
+    window.onload = calculateMonthlyPayment;
+    g_years.oninput = calculateMonthlyPayment;
+    g_interestRate.oninput = calculateMonthlyPayment;
+    g_mortgageAmount.oninput = calculateMonthlyPayment;
+    function calculateMonthlyPayment() {
+        var monthlyRate = g_interestRate.value / 12 / 100;
+        var months = g_years.value * 12;
+        var factor = Math.pow(1+monthlyRate, months);
+        var mortgageAmount = parseFloat(g_mortgageAmount.value.replace(/,/g, ''));
+        var monthlyPayment = (mortgageAmount * factor * monthlyRate) / (factor - 1);
+        g_monthlyPayment.value = parseFloat(monthlyPayment.toFixed(0)).toLocaleString('en');
+        g_totalPayment.value = parseFloat((monthlyPayment * months).toFixed(0)).toLocaleString('en');
+    }
+  </script>
+</html>
