@@ -67,7 +67,9 @@
     <fieldset>
       <legend>Weight</legend>
       <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="pound" value="135" id="pound">
-      pound=
+      pound
+      <input type="number" onfocus="onFocus()" pattern="[0-9]*" name="ounce" value="0" id="ounce" min="0" max="15">
+      ounce = 
       <input type="number" onfocus="onFocus()" name="kg" value="61" id="kg">
       kg
     </fieldset>
@@ -159,13 +161,16 @@
     // Weight
     var pound = document.getElementById("pound");
     var kg = document.getElementById("kg");
+    var ounce = document.getElementById("ounce");
     pound.oninput = function() {poundToKg();};
+    ounce.oninput = function() {poundToKg();};
     kg.oninput = function() {kgToPound()};
     function poundToKg() {
-        kg.value = (pound.value * KG_PER_POUND).toFixed(1);
+        kg.value = ((parseFloat(pound.value) + (parseFloat(ounce.value) / 16))* KG_PER_POUND ).toFixed(1);
     }
     function kgToPound() {
-        pound.value = (kg.value / KG_PER_POUND).toFixed(0);
+        pound.value = Math.floor((kg.value / KG_PER_POUND));
+        ounce.value = (((kg.value / KG_PER_POUND) - pound.value) * 16).toFixed(0);
     }
     // Speed
     var mile = document.getElementById("mile");
