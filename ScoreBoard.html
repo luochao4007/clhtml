@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <style>
+        body {
+            border: none;
+            background-color: black;
+            margin: 0;
+            overscroll-behavior-y: none;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: relative;
+            /*to put button over scoreboard*/
+        }
+
+        .board {
+            display: flex;
+            height: 100vh;
+            border-width: thin;
+            flex-direction: row;
+        }
+
+        .player {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .nameGame {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+
+        }
+
+        .name {
+            width: 60%;
+            font-size: 15vh;
+            background: transparent;
+            color: white;
+        }
+
+        .game {
+            font-size: 15vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+
+        .score {
+            font-size: 60vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+
+        #player1 {
+            background-color: blue;
+        }
+
+        #player2 {
+            background-color: red;
+        }
+
+        #nameGame2 {
+            flex-direction: row-reverse;
+        }
+
+        #name1 {
+            text-align: left;
+        }
+
+        #name2 {
+            text-align: right;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 2vh 2vh;
+            font-size: 3vh;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #04AA6D;
+            border: none;
+            border-radius: 2vh;
+            box-shadow: 0 1vh #999;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        .buttonDiv {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #swapButtonDiv {
+            top: 60%;
+        }
+
+        #resetButtonDiv {
+            top: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="screen">
+        <div class="board">
+            <div id="player1" class="player">
+                <div id="nameGame1" class="nameGame">
+                    <input id="name1" type="text" class="name" value="Robin" maxlength="">
+                    <div id="game1" class="game">0</div>
+                </div>
+                <div id="score1" class="score">
+                    0
+                </div>
+            </div>
+            <div id="player2" class="player">
+                <div id="nameGame2" class="nameGame">
+                    <input id="name2" type="text" class="name" value="Ricky">
+                    <div id="game2" class="game">0</div>
+                </div>
+                <div id="score2" class="score">
+                    0
+                </div>
+            </div>
+
+        </div>
+        <div class="buttonDiv" id="swapButtonDiv">
+            <button class="button" id="swapButton">swap</button>
+        </div>
+        <div class="buttonDiv" id="resetButtonDiv">
+            <button class="button" id="resetButton">reset</button>
+        </div>
+    </div>
+</body>
+
+<script>
+    var elementTouchStartY = {};
+    var elements = {};
+    var numIds = ["score1", "game1", "score2", "game2"];
+
+    for (var elementId of numIds) {
+        var element = document.getElementById(elementId);
+        elements[elementId] = element;
+        element.addEventListener("touchstart", touchStart);
+        element.addEventListener("touchend", touchEnd);
+
+    }
+
+    var swapButton = document.getElementById('swapButton');
+    swapButton.addEventListener("click", swapSides);
+
+    var resetButton = document.getElementById('resetButton');
+    resetButton.addEventListener("click", resetScore);
+
+    function touchStart(event) {
+        srcElementId = event.srcElement.id;
+        elementTouchStartY[srcElementId] = event.changedTouches[0].screenY;
+    }
+
+    function touchEnd(event) {
+        srcElementId = event.srcElement.id;
+        startY = elementTouchStartY[srcElementId];
+        if (startY === null) {
+            return;
+        }
+        diffY = event.changedTouches[0].screenY - startY;
+        if (diffY > 100) {
+            minusOne(event.srcElement);
+        } else if (diffY < 50) {
+            plusOne(event.srcElement);
+        }
+    }
+
+    function plusOne(element) {
+        oldNum = Number(element.textContent);
+        if (!updateGame(element))
+            element.textContent = String(oldNum + 1);
+    }
+
+    function minusOne(element) {
+        oldNum = Number(element.textContent);
+        element.textContent = String(oldNum - 1);
+    }
+
+    function updateGame(element) {
+        score1 = Number(elements["score1"].textContent);
+        score2 = Number(elements["score2"].textContent);
+        if (score1 > score2 + 1 && score1 >= 11 && element.id === "score1") {
+            elements["score1"].textContent = "0";
+            elements["score2"].textContent = "0";
+            elements["game1"].textContent = String(Number(elements["game1"].textContent) + 1);
+            return true;
+        } else if (score2 > score1 + 1 && score2 >= 11 && element.id === "score2") {
+            elements["score1"].textContent = "0";
+            elements["score2"].textContent = "0";
+            elements["game2"].textContent = String(Number(elements["game2"].textContent) + 1);
+            return true;
+        }
+        return false;
+    }
+
+    var playerLeft = {};
+    playerLeft.score = elements.score1;
+    playerLeft.game = elements.game1;
+    var playerRight = {};
+    playerRight.score = elements.score2;
+    playerRight.game = elements.game2;
+
+    function swapSides() {
+        boardElement = document.getElementsByClassName("board")[0];
+        if (boardElement.style.flexDirection !== "row-reverse") {
+            boardElement.style.flexDirection = "row-reverse";
+            nameGame1Element = document.getElementById("nameGame1");
+            nameGame1Element.style.flexDirection = "row-reverse";
+            nameGame2Element = document.getElementById("nameGame2");
+            nameGame2Element.style.flexDirection = "row";
+            name1Element = document.getElementById("name1");
+            name1Element.style.textAlign = "right";
+            name2Element = document.getElementById("name2");
+            name2Element.style.textAlign = "left";
+        } else {
+            boardElement.style.flexDirection = "row";
+            nameGame1Element = document.getElementById("nameGame1");
+            nameGame1Element.style.flexDirection = "row";
+            nameGame2Element = document.getElementById("nameGame2");
+            nameGame2Element.style.flexDirection = "row-reverse";
+            name1Element = document.getElementById("name1");
+            name1Element.style.textAlign = "left";
+            name2Element = document.getElementById("name2");
+            name2Element.style.textAlign = "right";
+        }
+        var tmp = playerLeft;
+        playerLeft = playerRight;
+        playerRight = tmp;
+    }
+
+    function resetScore() {
+        elements.score1.textContent = "0";
+        elements.game1.textContent = "0";
+        elements.score2.textContent = "0";
+        elements.game2.textContent = "0";
+    }
+
+    // 8BitDo Zero 2 key layout
+    //    k        m
+    //    c        h
+    //  e   f    i   g
+    //    d        j
+    //       n  o
+    document.addEventListener("keyup", keyInput);
+
+    function keyInput(event) {
+        if (document.activeElement.id === "name1" || document.activeElement.id === "name2") {
+            return;
+        }
+
+        switch (event.key) {
+            case "k":
+            case "c":
+                plusOne(playerLeft.score);
+                break;
+            case "d":
+                minusOne(playerLeft.score);
+                break;
+            case "e":
+                // minusOne(playerLeft.game);
+                break;
+            case "f":
+                // plusOne(playerLeft.game);
+                break;
+            case "m":
+            case "h":
+                plusOne(playerRight.score);
+                break;
+            case "j":
+                minusOne(playerRight.score);
+                break;
+            case "i":
+                // minusOne(playerRight.game);
+                break;
+            case "g":
+                // plusOne(playerRight.game);
+                break;
+            case "n":
+            case "o":
+                swapSides();
+        }
+
+    }
+
+
+
+</script>
+
+</html>
