@@ -180,22 +180,6 @@
   .btn-edit:hover { background: rgba(245,197,66,0.22); }
 
 
-  /* ── Steps log ── */
-  .steps {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 16px;
-  }
-  .steps li {
-    padding: 5px 12px;
-    margin-bottom: 4px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.95rem;
-    color: #bbb;
-    border-left: 3px solid rgba(245,197,66,0.4);
-  }
 
   /* ── Hint area ── */
   #hint-area {
@@ -288,8 +272,6 @@
   </div>
 
 
-
-  <ul class="steps" id="steps"></ul>
 
   <div class="btn-row">
     <button class="btn-new" onclick="newGame()">New Game</button>
@@ -470,8 +452,6 @@ function render() {
 
 
 
-  const stepsEl = document.getElementById('steps');
-  stepsEl.innerHTML = stepsLog.map(s => `<li>${s}</li>`).join('');
 }
 
 function setMessage(text, cls) {}
