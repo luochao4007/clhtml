@@ -30,14 +30,8 @@
   h1 {
     text-align: center;
     font-size: 2.2rem;
-    margin-bottom: 4px;
-    color: #f5c542;
-  }
-  .subtitle {
-    text-align: center;
-    font-size: 0.95rem;
-    color: #aaa;
     margin-bottom: 24px;
+    color: #f5c542;
   }
 
   /* ── Number cards ── */
@@ -185,29 +179,6 @@
   }
   .btn-edit:hover { background: rgba(245,197,66,0.22); }
 
-  /* ── Message area ── */
-  .message {
-    text-align: center;
-    font-size: 1rem;
-    min-height: 28px;
-    margin-bottom: 16px;
-    color: #aaa;
-  }
-  .message.win {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #50c878;
-    animation: celebrate 0.5s ease-out;
-  }
-  .message.lose {
-    color: #ff8a8a;
-    font-weight: 600;
-  }
-  @keyframes celebrate {
-    0% { transform: scale(0.8); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
-  }
 
   /* ── Steps log ── */
   .steps {
@@ -277,7 +248,7 @@
       border-radius: 16px;
     }
     h1 { font-size: 1.7rem; }
-    .subtitle { font-size: 0.85rem; margin-bottom: 18px; }
+
     .number-cards { gap: 10px; grid-template-columns: repeat(2, min(40vw, 160px)); }
     .card, .card-edit {
       font-size: min(14vw, 5rem); border-radius: 10px;
@@ -305,7 +276,7 @@
 <body>
 <div class="container">
   <h1>24 Game</h1>
-  <p class="subtitle">Pick a number, an operator, then another number. Make 24!</p>
+
 
   <div class="number-cards" id="cards"></div>
 
@@ -316,13 +287,13 @@
     <button class="op-btn" id="op-div" onclick="operate('/')" disabled>&divide;</button>
   </div>
 
-  <div class="message" id="message">Press <b>New Game</b> to start!</div>
+
 
   <ul class="steps" id="steps"></ul>
 
   <div class="btn-row">
     <button class="btn-new" onclick="newGame()">New Game</button>
-    <button class="btn-edit" id="btn-edit" onclick="toggleEdit()">Edit</button>
+
     <button class="btn-undo" onclick="undo()">Undo</button>
     <button class="btn-hint" onclick="showHint()">Hint</button>
   </div>
@@ -475,11 +446,7 @@ function render() {
   stepsEl.innerHTML = stepsLog.map(s => `<li>${s}</li>`).join('');
 }
 
-function setMessage(text, cls) {
-  const el = document.getElementById('message');
-  el.className = 'message' + (cls ? ' ' + cls : '');
-  el.innerHTML = text;
-}
+function setMessage(text, cls) {}
 
 // ── Game actions ─────────────────────────────────────────
 
