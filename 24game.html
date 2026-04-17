@@ -42,20 +42,20 @@
 
   /* ── Number cards ── */
   .number-cards {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, min(40vw, 200px));
+    gap: 16px;
     justify-content: center;
     margin-bottom: 20px;
-    min-height: 80px;
     align-items: center;
   }
   .card {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
+    font-size: min(16vw, 7rem);
     font-weight: bold;
     border: 2px solid rgba(245,197,66,0.4);
     border-radius: 14px;
@@ -92,9 +92,9 @@
     margin-bottom: 20px;
   }
   .op-btn {
-    width: 64px;
-    height: 54px;
-    font-size: 1.6rem;
+    width: min(20vw, 100px);
+    height: min(16vw, 80px);
+    font-size: min(8vw, 3rem);
     font-weight: bold;
     border: 2px solid rgba(100,160,255,0.4);
     border-radius: 12px;
@@ -157,10 +157,10 @@
 
   /* ── Edit mode cards ── */
   .card-edit {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    aspect-ratio: 1;
     text-align: center;
-    font-size: 1.8rem;
+    font-size: min(16vw, 7rem);
     font-weight: bold;
     border: 2px solid rgba(245,197,66,0.7);
     border-radius: 14px;
@@ -278,15 +278,14 @@
     }
     h1 { font-size: 1.7rem; }
     .subtitle { font-size: 0.85rem; margin-bottom: 18px; }
-    .number-cards { gap: 8px; }
+    .number-cards { gap: 10px; grid-template-columns: repeat(2, min(40vw, 160px)); }
     .card, .card-edit {
-      width: 0; flex: 1; max-width: 72px;
-      height: 72px; font-size: 1.5rem; border-radius: 10px;
+      font-size: min(14vw, 5rem); border-radius: 10px;
     }
     .op-row { gap: 8px; }
     .op-btn {
-      width: 0; flex: 1; max-width: 60px;
-      height: 50px; font-size: 1.4rem;
+      width: 0; flex: 1; max-width: 80px;
+      height: 64px; font-size: min(7vw, 2.4rem);
     }
     .btn-row { flex-wrap: wrap; gap: 8px; }
     button { flex: 1; min-width: 0; padding: 14px 10px; font-size: 0.95rem; }
@@ -296,8 +295,9 @@
   @media screen and (max-width: 360px) {
     .container { padding: 20px 12px; }
     h1 { font-size: 1.5rem; }
-    .card, .card-edit { height: 64px; font-size: 1.3rem; }
-    .op-btn { height: 46px; font-size: 1.2rem; }
+    .number-cards { grid-template-columns: repeat(2, min(40vw, 140px)); }
+    .card, .card-edit { font-size: min(12vw, 4.5rem); }
+    .op-btn { height: 56px; font-size: min(6vw, 2rem); }
     .solution-list li { font-size: 0.85rem; }
   }
 </style>
@@ -530,16 +530,16 @@ function selectCard(i) {
 
     // Build combined expression with minimal parentheses
     const newExpr = combineExpr(exprs[firstIdx], exprs[i], chosenOp);
-    exprs[firstIdx] = newExpr;
-    exprs[i] = null;
+    exprs[i] = newExpr;
+    exprs[firstIdx] = null;
 
     // Log as one equation
     stepsLog = [newExpr.text + ' = ' + formatNum(result)];
 
-    // Update cards: put result in first selected, null out second
-    cards[firstIdx] = result;
-    cards[i] = null;
-    const resultIdx = firstIdx;
+    // Update cards: put result in second selected, null out first
+    cards[i] = result;
+    cards[firstIdx] = null;
+    const resultIdx = i;
     chosenOp = null;
 
     // Check if done
