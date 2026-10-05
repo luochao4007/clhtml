@@ -22,14 +22,11 @@
     <form>
       <fieldset>
         Years:
-        <select onfocus="onFocus()" name="years" id="years">
-          <option value = "15">15</option>
-          <option value = "30">30</option>
-        </select><br>
+        <input onfocus="onFocus()" type="number" name="years" value= "20" id="years"><br>
         Interest Rate:
-        <input onfocus="onFocus()"  type="number" name="interestRate" value="3.25" id="interestRate">%<br>
+        <input onfocus="onFocus()"  type="number" name="interestRate" value="2.823" id="interestRate">%<br>
         Mortgage Amount:
-        $<input onfocus="onFocus()" type="number" pattern="[0-9]*" value="604800" name="mortgageAmount" id="mortgageAmount"><br>
+        $<input onfocus="onFocus()" type="number" pattern="[0-9]*" value="500000" name="mortgageAmount" id="mortgageAmount"><br>
         Monthly Payment:
         $<output name="monthlyPayment" id="monthlyPayment"></output><br>
         Total Payment:
@@ -57,11 +54,11 @@
     g_interestRate.oninput = calculateMonthlyPayment;
     g_mortgageAmount.oninput = calculateMonthlyPayment;
     function calculateMonthlyPayment() {
-        var monthlyRate = g_interestRate.value / 12 / 100;
+        var monthlyRate = Math.pow(1+g_interestRate.value/100, 1/12) - 1;
         var months = g_years.value * 12;
         var factor = Math.pow(1+monthlyRate, months);
         var mortgageAmount = parseFloat(g_mortgageAmount.value.replace(/,/g, ''));
-        var monthlyPayment = (mortgageAmount * factor * monthlyRate) / (factor - 1);
+        var monthlyPayment = mortgageAmount * (factor-1) / monthlyRate / months / months;
         g_monthlyPayment.value = parseFloat(monthlyPayment.toFixed(0)).toLocaleString('en');
         g_totalPayment.value = parseFloat((monthlyPayment * months).toFixed(0)).toLocaleString('en');
     }
