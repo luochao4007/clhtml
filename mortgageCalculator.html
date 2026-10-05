@@ -1,66 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Mortgage Calculator</title>
     <style>
       * {
-      font-size:35px;
-      text-align:left;
+          box-sizing: border-box;
       }
-      input {
-          width: 23%;
-          margin: 1px;
-          text-align: right;
+      html {
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+      }
+      body {
+          margin: 0;
+          padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+                   max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          /* Scales from phone to tablet; never below 18px so iOS won't zoom on input focus */
+          font-size: clamp(18px, 4.5vw, 32px);
+          line-height: 1.4;
+          background: #f4f6f8;
+          color: #222;
       }
       fieldset {
-          width: 90%;
-          margin: auto;
+          width: 100%;
+          max-width: 720px;
+          margin: 0 auto;
+          padding: 1em;
+          border: 1px solid #ccc;
+          border-radius: 12px;
+          background: #fff;
+      }
+      legend {
+          font-weight: bold;
+          padding: 0 0.3em;
+      }
+      .row {
+          display: grid;
+          grid-template-columns: 1fr minmax(7em, 45%);
+          align-items: center;
+          gap: 0.5em;
+          padding: 0.4em 0;
+      }
+      .row + .row {
+          border-top: 1px solid #eee;
+      }
+      .field {
+          display: flex;
+          align-items: center;
+          gap: 0.2em;
+          min-width: 0;
+      }
+      input, output {
+          font: inherit;
+          flex: 1;
+          min-width: 0;
+          width: 100%;
+          text-align: right;
+      }
+      input {
+          padding: 0.3em 0.4em;
+          min-height: 44px;
+          border: 1px solid #aaa;
+          border-radius: 8px;
+      }
+      input:focus {
+          outline: 2px solid #1a73e8;
+          border-color: #1a73e8;
+      }
+      output {
+          font-weight: bold;
+          padding: 0.3em 0.4em;
+      }
+      /* Narrow phones: stack label above its field */
+      @media (max-width: 360px) {
+          .row {
+              grid-template-columns: 1fr;
+              gap: 0.2em;
+          }
       }
     </style>
   </head>
   <body>
     <form>
       <fieldset>
-        Years:
-        <input onfocus="onFocus()" type="number" name="years" value= "20" id="years"><br>
-        Interest Rate:
-        <input onfocus="onFocus()"  type="number" name="interestRate" value="2.823" id="interestRate">%<br>
-        Mortgage Amount:
-        $<input onfocus="onFocus()" type="number" pattern="[0-9]*" value="500000" name="mortgageAmount" id="mortgageAmount"><br>
-        Monthly Payment:
-        $<output name="monthlyPayment" id="monthlyPayment"></output><br>
-        Total Payment:
-        $<output name="totalPayment" id="totalPayment"></output><br>
+        <legend>Mortgage Calculator</legend>
+        <div class="row">
+          <label for="years">Years:</label>
+          <span class="field">
+            <input onfocus="onFocus()" type="number" inputmode="numeric" min="1" name="years" value="20" id="years">
+          </span>
+        </div>
+        <div class="row">
+          <label for="interestRate">Interest Rate:</label>
+          <span class="field">
+            <input onfocus="onFocus()" type="number" inputmode="decimal" step="any" name="interestRate" value="3.09" id="interestRate">%
+          </span>
+        </div>
+        <div class="row">
+          <label for="mortgageAmount">Mortgage Amount:</label>
+          <span class="field">
+            $<input onfocus="onFocus()" type="number" inputmode="numeric" pattern="[0-9]*" value="500000" name="mortgageAmount" id="mortgageAmount">
+          </span>
+        </div>
+        <div class="row">
+          <label for="monthlyPayment">Monthly Payment:</label>
+          <span class="field">
+            $<output name="monthlyPayment" id="monthlyPayment"></output>
+          </span>
+        </div>
+        <div class="row">
+          <label for="totalPayment">Total Payment:</label>
+          <span class="field">
+            $<output name="totalPayment" id="totalPayment"></output>
+          </span>
+        </div>
       </fieldset>
     </form>
+    <script>
+      function isMobileDevice() {
+          return (typeof window.orientation !== "undefined") ||
+              (navigator.userAgent.indexOf('IEMobile') !== -1);
+      }
+      function onFocus() {
+          if (isMobileDevice()) {
+              document.activeElement.value="";
+          }
+      }
+      var g_years = document.getElementById("years");
+      var g_interestRate = document.getElementById("interestRate");
+      var g_mortgageAmount = document.getElementById("mortgageAmount");
+      var g_monthlyPayment = document.getElementById("monthlyPayment");
+      var g_totalPayment = document.getElementById("totalPayment");
+      window.onload = calculateMonthlyPayment;
+      g_years.oninput = calculateMonthlyPayment;
+      g_interestRate.oninput = calculateMonthlyPayment;
+      g_mortgageAmount.oninput = calculateMonthlyPayment;
+      function calculateMonthlyPayment() {
+          var monthlyRate = Math.pow(1+g_interestRate.value/100, 1/12) - 1;
+          var months = g_years.value * 12;
+          var factor = Math.pow(1+monthlyRate, months);
+          var mortgageAmount = parseFloat(g_mortgageAmount.value.replace(/,/g, ''));
+          var monthlyPayment = monthlyRate === 0 ? mortgageAmount / months
+              : mortgageAmount * monthlyRate * factor / (factor - 1);
+          g_monthlyPayment.value = parseFloat(monthlyPayment.toFixed(0)).toLocaleString('en');
+          g_totalPayment.value = parseFloat((monthlyPayment * months).toFixed(0)).toLocaleString('en');
+      }
+    </script>
   </body>
-  <script>
-    function isMobileDevice() {
-        return (typeof window.orientation !== "undefined") ||
-            (navigator.userAgent.indexOf('IEMobile') !== -1);
-    }
-    function onFocus() {
-        if (isMobileDevice()) {
-            document.activeElement.value="";
-        }
-    }
-    var g_years = document.getElementById("years");
-    var g_interestRate = document.getElementById("interestRate");
-    var g_mortgageAmount = document.getElementById("mortgageAmount");
-    var g_monthlyPayment = document.getElementById("monthlyPayment");
-    var g_totalPayment = document.getElementById("totalPayment");
-    window.onload = calculateMonthlyPayment;
-    g_years.oninput = calculateMonthlyPayment;
-    g_interestRate.oninput = calculateMonthlyPayment;
-    g_mortgageAmount.oninput = calculateMonthlyPayment;
-    function calculateMonthlyPayment() {
-        var monthlyRate = Math.pow(1+g_interestRate.value/100, 1/12) - 1;
-        var months = g_years.value * 12;
-        var factor = Math.pow(1+monthlyRate, months);
-        var mortgageAmount = parseFloat(g_mortgageAmount.value.replace(/,/g, ''));
-        var monthlyPayment = mortgageAmount * (factor-1) / monthlyRate / months / months;
-        g_monthlyPayment.value = parseFloat(monthlyPayment.toFixed(0)).toLocaleString('en');
-        g_totalPayment.value = parseFloat((monthlyPayment * months).toFixed(0)).toLocaleString('en');
-    }
-  </script>
 </html>
